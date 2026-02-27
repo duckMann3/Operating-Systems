@@ -15,7 +15,10 @@
 
 bool FILE_EXISTS_fOPEN(char* input_file);
 bool ERROR_HANDLER_UTILITY_CALL(int argc, char** argv);
-char* READ_ENTIRE_FILE(char* file);
+
+char* READ_ENTIRE_FILE(char* file, int file_size);
+int   GET_FILE_SIZE(char* file); 
+
 
 int main(int argc, char* argv[]) {
   printf("You have entered %d arguments:\n", argc);
@@ -42,8 +45,14 @@ int main(int argc, char* argv[]) {
   int pipefds[2];
   int return_status;
   int pid;
-  char* read_source_file;
-  char* write_destination_file;
+
+  char* source_file = argv[1];
+  int file_size = GET_FILE_SIZE(argv[1]);
+  char* read_source_file;   
+  char* write_destination_file = malloc(file_size + 1);
+  read_source_file = READ_ENTIRE_FILE(source_file, file_size);
+
+  printf("file size: %d\n", file_size);
 
   return_status = pipe(pipefds);
 
@@ -57,56 +66,61 @@ int main(int argc, char* argv[]) {
   // Child Process
   if(pid == 0) {
     read(pipefds[0], write_destination_file, sizeof(write_destination_file));
-    // read_destinatiexit
-    // on_file = fopen(argv[2], "wb");
     printf("Child Process Output: %s\n", write_destination_file);
   } else {
-    read_source_file = READ_ENTIRE_FILE(argv[1]);
-    if(read_source_file != NULL) {
-      write(pipefds[1], read_source_file, sizeof(read_source_file)); // Write "read_source_file" into pipe
-      printf("Parent Process Output: %s\n", read_source_file);
-    }
+    write(pipefds[1], read_source_file, sizeof(read_source_file)); // Write "read_source_file" into pipe
+    printf("Parent Process Output: %s\n", read_source_file);
   }
+
+  // free(read_source_file);
+  free(write_destination_file);
+  read_source_file = NULL;
+  write_destination_file = NULL;
   return SUCCESS;
 }
 
-char* READ_ENTIRE_FILE(char* file) {
+char* READ_ENTIRE_FILE(char* file, int file_size) {
   FILE* source_file = fopen(file, "r"); 
   if(source_file == NULL) {
     perror("Error opening file");
     return NULL;
   }
 
-  fseek(source_file, 0L, SEEK_END);
 
-  long file_size = ftell(source_file);
-  if(file_size == -1) { 
-    fclose(source_file);
-    perror("Error getting file size");
-    return NULL;
-  } 
-
-  rewind(source_file);
-
-  // char* buffer = (char*)malloc(sizeof(char) * (file_size + 1));
-  char* buffer = (char*)malloc(file_size + 1);
+  char* buffer = (char*)malloc(sizeof(char) * (file_size + 1));
   if(buffer == NULL) {
     fclose(source_file);
     fputs("Error allocating memory", stderr);
     return NULL;
   }
 
-
-  printf("%ld\n", file_size);
   fgets(buffer, file_size, source_file);
 
   fclose(source_file);
 
-  // buffer[file_size] = '\0';
+  buffer[file_size] = '\0';
 
-  printf("Output buffer: %s\n", buffer);
+  printf("Output buffer: %s\n\n", buffer);
   return buffer;
 }
+
+int GET_FILE_SIZE(char* file) {
+  FILE* source_file = fopen(file, "r");
+  long file_size = -1;
+ 
+  if(fseek(source_file, 0L, SEEK_END) == 0) { 
+    file_size = ftell(source_file);
+    if(file_size == -1) { 
+      perror("Error getting file size\n");
+    }
+  } else {
+      perror("Error seeking end of file\n");
+  }
+  rewind(source_file);
+  fclose(source_file);
+  return file_size;
+}
+
 
 bool ERROR_HANDLER_UTILITY_CALL(int argc, char** argv) {
   if(argc == 1) {

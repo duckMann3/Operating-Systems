@@ -1,1 +1,1 @@
-Example 1
+Output from example_1.txt
