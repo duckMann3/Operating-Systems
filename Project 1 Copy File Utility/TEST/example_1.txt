@@ -1,1 +1,1 @@
-Output from example_1.txt
+Message from inside Example 1
