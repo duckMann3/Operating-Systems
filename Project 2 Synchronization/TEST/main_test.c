@@ -6,18 +6,16 @@
 
 #define PHILOSOPHER_NUM 5
 
+// ===========================================
+//    INITIALIZE PHILOSOPHERS, LOCKS, & CV 
+// ===========================================
 enum { THINKING, HUNGRY, EATING } state[PHILOSOPHER_NUM];
-
-// int state[PHILOSOPHER_NUM];
 pthread_mutex_t monitor_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond[PHILOSOPHER_NUM];
-
 // ===========================
-//      HELPER FUNCTIONS 
+//        HELPER FUNCTION
 // ===========================
-void* print_message_function(void* ptr);
-void Wait_Time(void);
-
+int Wait_Time(void);
 // ===========================
 //      MONITOR FUNCTIONS 
 // ===========================
@@ -27,6 +25,7 @@ void return_forks(int philosopher_id);
 void test(int philosopher_id);
 
 int main(void) {
+  srand(time(NULL));
   pthread_t thread_id[PHILOSOPHER_NUM];
   int phil_IDs[PHILOSOPHER_NUM];
   
@@ -47,14 +46,20 @@ int main(void) {
   return 0;
 }
 
+int Wait_Time(void) {
+  return (rand() % 3) + 1; // Generate a random number from [1,3]
+}
+
 void* Philosopher_Status(void* i) {
   int philosopher_id = *(int*)i;
   while(1) {
-    printf("Philosopher %d is thinking.\n", philosopher_id);
-    sleep(1);
+    int thinking_time = Wait_Time(), eating_time = Wait_Time();
+    printf("Philosopher %d is thinking for %d sec.\n", philosopher_id, thinking_time);
+    sleep(thinking_time);
+    printf("Philosopher %d is HUNGRY.\n", philosopher_id);
     pickup_forks(philosopher_id);
-    printf("Philosophery %d is EATING.\n", philosopher_id);
-    sleep(1);
+    printf("Philosopher %d is EATING for %d sec.\n", philosopher_id, eating_time);
+    sleep(eating_time);
     return_forks(philosopher_id);
   } 
 }
