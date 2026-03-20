@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define PHILOSOPHER_ID 5
+#define PHILOSOPHER_NUM 5
 
 typedef enum {
     THINKING,
@@ -14,25 +14,31 @@ typedef struct {
     pthread_t thread;
     int id;
     action_t action;
+    pthread_cond_t wait;
 } philosopher_t;
 
-void* foo(void* arg);
-void* print_message_function(void* ptr);
+enum { THINKING, HUNGRY, EATING } state[PHILOSOPHER_NUM];
+pthread_cond_t self[PHILOSOPHER_NUM];
 
-// Main Code Functions:
-void Create_Philosopher_Threads(void);
+// ===========================
+//      HELPER FUNCTIONS 
+// ===========================
+void* print_message_function(void* ptr);
 void Wait_Time(void);
+// ===========================
+//          MONITOR 
+// ===========================
+// void test(int i);
+void Create_Philosopher_Threads(void);
+void test(philosopher_t* phil);
 void pickup_forks(int philosopher_id);
 void return_forks(int philosopher_id);
 
 philosopher_t philosophers[PHILOSOPHER_ID];
 int main(void) {
+
   Create_Philosopher_Threads();
   return 0;
-}
-
-void* foo(void* arg) {
-
 }
 
 void* print_message_function(void* ptr) {
@@ -56,4 +62,16 @@ void Wait_Time(void) {
   // Generate a random number from [1,3]
   int random_num = (rand() % 3) + 1;
   printf("Random number: %d\n", random_num);
+}
+
+void test(philosopher_t* phil) {
+  if(phil -> action == EATING && )
+}
+
+void pickup_forks(int philosopher_id) {
+
+}
+
+void return_forks(int philosopher_id) {
+
 }
