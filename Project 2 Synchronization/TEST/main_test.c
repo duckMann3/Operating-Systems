@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <semaphore.h>
 
 #define PHILOSOPHER_ID 5
 
@@ -22,6 +21,7 @@ void* print_message_function(void* ptr);
 
 // Main Code Functions:
 void Create_Philosopher_Threads(void);
+void Wait_Time(void);
 void pickup_forks(int philosopher_id);
 void return_forks(int philosopher_id);
 
@@ -49,4 +49,11 @@ void Create_Philosopher_Threads(void) {
     pthread_join(philosophers[i].thread, NULL);
     printf("Thread %d returns: %d\n", i, iret[i]);
   }
+}
+
+void Wait_Time(void) {
+  srand(time(NULL));
+  // Generate a random number from [1,3]
+  int random_num = (rand() % 3) + 1;
+  printf("Random number: %d\n", random_num);
 }
