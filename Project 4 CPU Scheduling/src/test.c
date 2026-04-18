@@ -6,12 +6,13 @@
 #define SIZE    100
 
 void add(char *name, int priority, int burst);
+void schedule(void);
 
+struct node* fcfs = NULL;
 int main(int argc, char *argv[]) {
     /*
      * Task
      * Next
-     */
     FILE *in;
     char *temp;
     char task[SIZE];
@@ -24,7 +25,6 @@ int main(int argc, char *argv[]) {
     
     while (fgets(task,SIZE,in) != NULL) {
         temp = strdup(task);
-        // name = strsep(&temp,",");
         name = strsep(&temp,",");
         priority = atoi(strsep(&temp,","));
         burst = atoi(strsep(&temp,","));
@@ -35,15 +35,31 @@ int main(int argc, char *argv[]) {
         free(temp);
     }
     fclose(in);
-    // add("T1", 4, 20);
-    
+    */
+    add("T1", 4, 20);
+    add("T2", 10, 20);
+    add("T3", 10, 20);
+
+    // add("T2", 5, 20);
+    schedule();
     return 0;
 }
 
 void add(char *name, int priority, int burst) {
-    Task input = {.name=name, .tid=1, .priority=priority, .burst=burst};
-    struct node* fcfs;
-    insert(&fcfs, &input);
+    // Task input = {.name=name, .tid=1, .priority=priority, .burst=burst};
+    Task* input=malloc(sizeof(Task)); // = {.name=name, .tid=1, .priority=priority, .burst=burst};
+    input->name = strdup(name);
+    input->tid=1;
+    input->priority=priority;
+    input->burst=burst;
+    insert(&fcfs, input);
+
+    // traverse(fcfs);
+    // delete(&fcfs, &input);
+}
+
+void schedule(void) {
+    
     traverse(fcfs);
-    delete(&fcfs, &input);
+    // traverse(fcfs);
 }
