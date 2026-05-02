@@ -8,4 +8,3 @@ void add(char *name, int priority, int burst);
 void schedule();
 
 // determine next task for execution
-void pickNextTask();
