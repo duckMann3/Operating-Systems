@@ -6,5 +6,3 @@ void add(char *name, int priority, int burst);
 
 // invoke the scheduler
 void schedule();
-
-// determine next task for execution
